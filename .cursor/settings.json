@@ -1,0 +1,44 @@
+{
+  "customDocs": {
+    "sources": [
+      {
+        //clerk
+        "name": "clerkkdocs",
+        "url": "https://clerk.com/docs",
+        "priority": 1
+      },
+      {
+        //remix
+        "name": "remixdocs",
+        "url": "https://remix.run/docs",
+        "priority": 2
+      },
+      {
+        //inngest
+        "name": "inngestdocs",
+        "url": "https://www.inngest.com/docs",
+        "priority": 3
+      },
+      {
+        //tailwind
+        "name": "tailwinddocs",
+        "url": "https://tailwindcss.com/docs",
+        "priority": 4
+      },
+      {
+        //shadcn
+        "name": "shadcndocs",
+        "url": "https://ui.shadcn.com/docs",
+        "priority": 5
+      },
+      {
+        //convex
+        "name": "convexdocs",
+        "url": "https://docs.convex.dev",
+        "priority": 6
+      }
+    ],
+    "searchPaths": ["app/**/*"],
+    "excludePaths": ["node_modules/**/*"]
+  }
+}

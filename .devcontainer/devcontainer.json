@@ -1,0 +1,41 @@
+{
+  "name": "Node.js",
+
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+    "source=${localWorkspaceFolderBasename}-convex-config,target=/root/.convex,type=volume"
+  ],
+
+  "features": {
+    "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+      "packages": "xdg-utils"
+    },
+    "ghcr.io/jckimble/devcontainer-features/ngrok:3": {
+      "version": "stable"
+    }
+  },
+
+  "runArgs": ["--network=host"],
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rangav.vscode-thunder-client",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "wix.vscode-import-cost"
+      ],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "files.associations": {
+          "*.css": "tailwindcss"
+        }
+      }
+    }
+  },
+
+  "remoteUser": "root"
+}
