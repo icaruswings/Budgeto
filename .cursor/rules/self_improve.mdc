@@ -71,3 +71,4 @@ alwaysApply: true
   - Document breaking changes
 
 Follow [cursor_rules.mdc](mdc:.cursor/rules/cursor_rules.mdc) for proper rule formatting and structure.
+

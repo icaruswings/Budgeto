@@ -22,6 +22,7 @@ import invariant from "tiny-invariant";
 import tailwind from "./tailwind.css?url";
 import { themeSessionResolver } from "./sessions.server";
 import { cn } from "./lib/utils";
+import { RootLayout } from "~/components/layout/RootLayout";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: tailwind },
@@ -64,7 +65,9 @@ function App() {
         <PreventFlashOnWrongTheme ssrTheme={Boolean(data?.theme)} />
       </head>
       <body className={cn("font-sans antialiased")}>
-        <Outlet />
+        <RootLayout>
+          <Outlet />
+        </RootLayout>
         <ScrollRestoration />
         <Scripts />
       </body>
