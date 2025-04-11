@@ -1,0 +1,166 @@
+
+## Product Requirements Document: Pay Cycle Smoother (MVP)
+
+**Version:** 1.0 (Consolidated MVP)
+**Date:** 2023-10-27
+**Author:** T3 Chat (AI Solution Architect)
+
+**1. Introduction**
+
+This document outlines the requirements for the Minimum Viable Product (MVP) of the "Pay Cycle Smoother" application. The primary goal of this application is to help users who are paid on one cycle (e.g., monthly) manage their personal cash flow as if they were paid on a different, preferred cycle (e.g., fortnightly). The MVP focuses on configuring pay cycles, calculating the equivalent "allowance" for the preferred cycle, displaying a schedule of these upcoming allowances, and notifying the user on their preferred payday.
+
+**2. Goals**
+
+*   Allow users to configure their actual pay amount, frequency (initially Monthly), and date.
+*   Allow users to configure their preferred pay frequency (initially Fortnightly) and day of the week.
+*   Calculate the equivalent pay amount for the user's preferred cycle based on their actual annual income.
+*   Display a clear schedule of upcoming "paydays" based on the preferred cycle.
+*   Notify the user via email on their preferred payday about the available amount for that period.
+*   Provide a simple, intuitive user experience for setup and viewing the schedule.
+*   Establish the foundational data model and architecture using the specified tech stack.
+
+**3. Non-Goals (Out of Scope for MVP)**
+
+*   Tracking actual bank account balances.
+*   Initiating bank transfers.
+*   Defining or tracking savings goals.
+*   Inputting or tracking recurring bills or expenses.
+*   Calculating disposable income after bills.
+*   Supporting pay frequencies other than Monthly (actual) and Fortnightly (desired) in the initial UI, although the calculation logic should be adaptable.
+*   Persisting the generated schedule list in the database (dynamic generation is acceptable for MVP).
+*   Advanced notification options beyond email (e.g., SMS, push).
+
+**4. User Stories**
+
+*   **US1:** As a user paid monthly, I want to input my monthly salary amount and the day of the month I get paid, so the system knows my actual income stream.
+*   **US2:** As a user accustomed to fortnightly budgeting, I want to select a fortnightly frequency and choose a specific day of the week (e.g., Monday) for my preferred "payday," so the system knows my desired cash flow rhythm.
+*   **US3:** As a user configuring my settings, I want to see the calculated equivalent fortnightly amount based on my monthly salary, so I understand how much I can notionally "access" each fortnight.
+*   **US4:** As a user configuring my settings, I want to see an example of how the schedule starts relative to my actual payday, so I understand when my first preferred "payday" occurs.
+*   **US5:** As a user, I want to view a screen listing my upcoming preferred "paydays" with the corresponding dates and calculated amounts, so I can anticipate my fortnightly "allowance."
+*   **US6:** As a user, I want to receive an email notification on my preferred payday reminding me of the amount available for that period, so I don't have to manually check the app.
+
+**5. Functional Requirements**
+
+**5.1. User Authentication**
+
+*   Leverage Clerk for user registration, login, and session management.
+*   All user-specific data (settings) must be associated with the authenticated user.
+
+**5.2. Pay Cycle Configuration (Settings Screen)**
+
+*   **Inputs:**
+    *   **Actual Pay:**
+        *   Amount: Numeric input, positive value required. Currency symbol displayed but not stored with the number.
+        *   Frequency: Select dropdown, initially locked or only showing "Monthly".
+        *   Day of Month: Numeric input or dropdown (1-31). Basic validation (e.g., not 31 for February).
+    *   **Preferred Pay:**
+        *   Frequency: Select dropdown, initially locked or only showing "Fortnightly".
+        *   Day of Week: Select dropdown (Monday - Sunday).
+*   **Calculation Display:**
+    *   Upon valid input of actual pay details, the system calculates the equivalent annual salary: \( \text{Annual Salary} = \text{Monthly Amount} \times 12 \).
+    *   Based on the selected preferred frequency (Fortnightly = 26 cycles per year), the system calculates the preferred cycle amount:
+        $$ \text{Preferred Amount} = \frac{\text{Annual Salary}}{\text{Number of Preferred Cycles per Year}} $$
+        *Example:* \( \frac{\$10,000 \times 12}{26} \approx \$4615.38 \)
+    *   This calculated amount should be clearly displayed to the user on the settings screen.
+*   **Schedule Preview / First Payday Logic:**
+    *   The system must determine the user's *next* actual payday based on the current date and their settings.
+    *   The system must then determine the *first* occurrence of the preferred payday (e.g., the first Monday) that falls *on or after* the next actual payday.
+    *   A preview message should be displayed, e.g., "Your next actual payday is Oct 15th. Your first fortnightly allowance of $4615.38 will be available starting on Monday, Oct 21st. Subsequent allowances will occur every 2 weeks on Monday."
+    *   **Handling the Initial Period:** The system does *not* prorate the first payment. The user receives their full monthly salary on their actual payday. The app simply indicates when the *first* calculated fortnightly amount becomes notionally available according to their preferred schedule, which will always be *after* they have received their actual pay. The user is responsible for managing the funds received on the actual payday until the first preferred payday occurs.
+*   **Saving:** A "Save" button persists these settings to the Convex database, associated with the logged-in user. Saving/updating settings should trigger the scheduling/rescheduling of notifications via Inngest.
+
+**5.3. Pay Schedule Display (Pay Schedule Screen)**
+
+*   This screen dynamically generates and displays a list of upcoming (and potentially a few recent past) preferred paydays.
+*   **Generation Logic:**
+    *   Retrieve the user's saved settings from Convex.
+    *   Determine the *first* preferred payday date using the same logic as the settings preview (first preferred day on/after the *next* actual payday).
+    *   Calculate subsequent preferred payday dates by adding the preferred interval (e.g., 14 days for fortnightly).
+    *   Display a list showing:
+        *   Date (e.g., "Mon, Oct 21, 2024")
+        *   Amount (the calculated preferred amount, e.g., "$4615.38")
+*   The list should show a reasonable number of future dates (e.g., next 3-6 months).
+*   This data is generated on-the-fly when the user visits the screen; it does not need to be stored persistently in the database for MVP.
+
+**5.4. Notifications**
+
+*   Use Inngest to schedule recurring background jobs based on the user's preferred pay cycle settings.
+*   When settings are saved or updated, schedule (or reschedule) the recurring Inngest job.
+*   The job should trigger on the morning of each preferred payday (based on the calculated schedule).
+*   The job will use **Resend** to send an email notification to the user's registered email address.
+*   Email Content Example: "Hi [User Name], your fortnightly allowance of [Amount] is available today, [Date]."
+
+**6. User Interface (UI) / User Experience (UX)**
+
+*   **Framework:** Remix
+*   **Styling:** Tailwind CSS
+*   **Components:** Shadcn UI
+*   **Screens:**
+    *   **Login/Signup:** Handled by Clerk components.
+    *   **Settings Screen (`/settings`):**
+        *   Use `Card` components to group Actual Pay and Preferred Pay settings.
+        *   Use `Input` for amounts, `Select` for frequency/day, potentially `DatePicker` or simple number input for day of month.
+        *   Display calculated amount clearly.
+        *   Display the schedule preview message prominently.
+        *   Use `Button` for saving.
+        *   Include appropriate labels and helper text.
+    *   **Pay Schedule Screen (`/` or `/schedule`):**
+        *   Use `Card` or `Table` component to display the list of upcoming paydays.
+        *   Keep the display clean and easy to read: Date | Amount.
+        *   Ensure responsive design for mobile/desktop.
+*   **Navigation:** Simple navigation between Settings and Pay Schedule screens (e.g., using a basic header/layout component).
+
+**7. Technical Requirements & Architecture**
+
+*   **Project Setup:** Use `npx create-remix@latest --template=icaruswings/remix-prime-stack`. (Assumes this template pre-configures Remix, Convex, Clerk, Inngest, Tailwind, Shadcn).
+*   **Authentication:** Clerk SDK integrated with Remix. User identity (ID, email) needed for associating settings and sending notifications.
+*   **Database:** Convex. Define schema for user settings (see section 8). Use Convex functions (mutations/actions) for saving settings and potentially for triggering Inngest scheduling. Use Convex queries for fetching settings.
+*   **Backend Logic:** Calculations (annualization, preferred amount) and schedule generation logic can reside within Remix loaders/actions or Convex query/mutation functions. Date/time calculations should use a robust library (e.g., `date-fns`). Be mindful of time zones; aim for consistency (e.g., store dates/run calculations in UTC or user's local time if easily accessible from Clerk/browser).
+*   **Background Jobs & Notifications:** Inngest SDK integrated with Remix/Convex. Define Inngest functions to:
+    *   Handle scheduling/rescheduling of recurring jobs based on user settings.
+    *   Execute the job on the scheduled date.
+    *   Fetch user details (email, calculated amount) potentially via a Convex query.
+    *   Send the email notification using the **Resend** API (requires obtaining and configuring a Resend API key).
+*   **UI:** Remix routes, React components using Shadcn UI primitives styled with Tailwind CSS.
+
+**8. Data Model (Conceptual - Convex Schema)**
+
+```typescript
+// convex/schema.ts
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
+
+export default defineSchema({
+  userSettings: defineTable({
+    userId: v.string(), // Links to Clerk user ID
+    userEmail: v.string(), // Store email for notifications
+    actualPayAmount: v.number(),
+    actualPayFrequency: v.union(v.literal("MONTHLY")), // Enum, only MONTHLY for MVP
+    actualPayDayOfMonth: v.number(), // 1-31
+    desiredPayFrequency: v.union(v.literal("FORTNIGHTLY")), // Enum, only FORTNIGHTLY for MVP
+    desiredPayDayOfWeek: v.union( // Representing day for schedule start
+      v.literal("SUNDAY"),
+      v.literal("MONDAY"),
+      v.literal("TUESDAY"),
+      v.literal("WEDNESDAY"),
+      v.literal("THURSDAY"),
+      v.literal("FRIDAY"),
+      v.literal("SATURDAY")
+    ),
+    // Optional: Store the calculated preferred amount if needed frequently by jobs
+    // calculatedPreferredAmount: v.optional(v.number()),
+  }).index("by_userId", ["userId"]),
+  // Other tables for future features (bills, goals) would go here
+});
+```
+*(Note: Added `userEmail` to the schema for easy access by the notification job).*
+
+**9. Future Considerations (Post-MVP)**
+
+*   **Time Zone Handling:** Implement robust time zone support, allowing users to specify their zone for accurate scheduling and notification timing.
+*   **Error Handling:** Enhance error handling for invalid inputs, calculation edge cases, Inngest job failures, and Resend API errors (e.g., logging, user feedback).
+*   **Editing Settings Impact:** Refine how editing settings affects the schedule and notifications, especially mid-cycle.
+*   **Leap Years:** Double-check date calculation logic handles leap years correctly.
+*   **More Frequencies:** Expand UI and logic to support weekly, bi-monthly actual pay, or weekly desired pay.
+*   **UI/UX Refinements:** Add loading states, better validation feedback, potentially visualizations.
+*   **Onboarding:** Create a simple onboarding flow for new users.

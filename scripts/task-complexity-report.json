@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "generatedAt": "2025-04-11T07:01:00.100Z",
+    "tasksAnalyzed": 10,
+    "thresholdScore": 5,
+    "projectName": "Your Project Name",
+    "usedResearch": true
+  },
+  "complexityAnalysis": [
+    {
+      "taskId": 1,
+      "taskTitle": "Setup Project Repository with Required Dependencies",
+      "complexityScore": 7,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the process of initializing the Remix Prime Stack project, configuring each dependency (Convex, Clerk, Inngest, Tailwind, Shadcn UI, Resend), setting up environment variables, and creating a GitHub repository.",
+      "reasoning": "This task involves multiple integrations and initializations, each with its own configuration steps. Managing dependencies and setting up environment variables adds technical complexity."
+    },
+    {
+      "taskId": 2,
+      "taskTitle": "Implement Convex Database Schema",
+      "complexityScore": 6,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "List steps for creating and testing the Convex schema, including defining tables, setting indexes, and verifying with a development server.",
+      "reasoning": "The task is moderately complex due to the need for schema definition, indexing, and testing, but it is bounded in scope and well-documented."
+    },
+    {
+      "taskId": 3,
+      "taskTitle": "Set Up Clerk Authentication",
+      "complexityScore": 8,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Detail steps for configuring Clerk, including route setup, middleware implementation, user context provider creation, and testing authentication flows.",
+      "reasoning": "Authentication involves secure integration, middleware, and ensuring data accessibility across the application, which increases complexity."
+    },
+    {
+      "taskId": 4,
+      "taskTitle": "Create Navigation and Layout Components",
+      "complexityScore": 5,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "Outline steps for creating the root layout, implementing responsive navigation, and integrating user authentication status display.",
+      "reasoning": "This is a straightforward UI task with limited dependencies, but it requires attention to responsive design and authentication integration."
+    },
+    {
+      "taskId": 5,
+      "taskTitle": "Implement Settings Screen UI",
+      "complexityScore": 7,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the process of building the Settings screen, including route creation, form implementation, validation, and styling.",
+      "reasoning": "Building a form-based UI with validation and styling adds complexity, especially when integrating it with other components and dependencies."
+    },
+    {
+      "taskId": 6,
+      "taskTitle": "Implement Pay Calculation Logic",
+      "complexityScore": 8,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "List steps for implementing the pay calculation algorithm, creating utility functions, and integrating real-time calculation displays.",
+      "reasoning": "The task is computationally complex due to the need for accurate logic implementation and real-time updates, which require rigorous testing."
+    },
+    {
+      "taskId": 7,
+      "taskTitle": "Implement Settings Persistence and First Payday Logic",
+      "complexityScore": 9,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Detail steps for saving settings to the database, implementing payday calculation logic, and handling date and timezone complexities.",
+      "reasoning": "This task involves database interactions, algorithmic complexity, and handling time-sensitive logic, making it highly challenging."
+    },
+    {
+      "taskId": 8,
+      "taskTitle": "Implement Pay Schedule Screen",
+      "complexityScore": 6,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "Outline steps for creating the pay schedule route, fetching user settings, calculating upcoming paydays, and displaying them in a styled UI.",
+      "reasoning": "While primarily a UI task, it involves dynamic data fetching and integration with complex logic from previous tasks."
+    },
+    {
+      "taskId": 9,
+      "taskTitle": "Set Up Inngest for Notification Scheduling",
+      "complexityScore": 7,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down steps for configuring Inngest, creating notification scheduling functions, and implementing webhook endpoints.",
+      "reasoning": "The task requires integration with an external service and developing logic for scheduling and rescheduling jobs, increasing complexity."
+    },
+    {
+      "taskId": 10,
+      "taskTitle": "Implement Email Notifications with Resend",
+      "complexityScore": 6,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "List steps for configuring Resend, creating email templates, and implementing job handlers to send notifications.",
+      "reasoning": "This task is relatively straightforward but involves external API integration and robust error handling to ensure reliable email delivery."
+    }
+  ]
+}
